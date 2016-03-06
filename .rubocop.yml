@@ -7,6 +7,7 @@ AllCops:
     - "bin/**/*"
     - "test/**/*"
     - "Rakefile"
+    - "simplemvc.gemspec"
   UseCache: false
 Style/CollectionMethods:
   Description: Preferred collection methods.
@@ -119,7 +120,7 @@ Style/StringLiteralsInInterpolation:
   SupportedStyles:
   - single_quotes
   - double_quotes
-Style/TrailingComma:
+Style/TrailingCommaInArguments:
   Description: Checks for trailing comma in parameter lists and literals.
   StyleGuide: https://github.com/bbatsov/ruby-style-guide#no-trailing-array-commas
   Enabled: false
