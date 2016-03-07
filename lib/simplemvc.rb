@@ -1,4 +1,6 @@
 require "simplemvc/version"
+require "simplemvc/controller.rb"
+require "simplemvc/utils.erb"
 
 module Simplemvc
   class Application
@@ -12,7 +14,7 @@ module Simplemvc
       end
 
       # env["PATH_INFO"] = "pages/about" => PagesController.send(:about)
-      controller_class, action = get_controller_and_action(_env)
+      controller_class, action = get_controller_and_action(env)
       response = controller_class.new.send(action)
 
       [200, { "Content-type" => "text/html" }, [response]]
