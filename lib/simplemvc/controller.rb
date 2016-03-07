@@ -9,7 +9,7 @@ module Simplemvc
     end
 
     def controller_name
-      self.class.to_s.gsub(/Controller$/, "").downcase
+      self.class.to_s.gsub(/Controller$/, "").to_snake_case
     end
   end
 end
