@@ -1,6 +1,6 @@
 require "simplemvc/version"
 require "simplemvc/controller.rb"
-require "simplemvc/utils.erb"
+require "simplemvc/utils.rb"
 
 module Simplemvc
   class Application
