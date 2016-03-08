@@ -5,25 +5,67 @@ module Simplemvc
     end
 
     def match(url, *args)
-      target = args.shift unless args.empty?
+      target = args.empty? ? nil : args.shift
+
+      url_parts = url.split("/")
+      url_parts.select! { |part| !part.empty? }
+
+      placeholders = []
+      regexp = url_parts.map do |part|
+        if part[0] == ":"
+          placeholders << part[1..-1]
+          "([A-Za-z0-9_]+)"
+        else
+          part
+        end
+      end
+
+      regexp = regexp.join("/")
 
       @routes << {
-        regexp: Regexp.new("^#{url}$"),
-        target: target
+        regexp: Regexp.new("^/#{regexp}$"),
+        target: target,
+        placeholders: placeholders
       }
     end
 
     def check_url(url)
       @routes.each do |route|
         match = route[:regexp].match(url)
-
         next unless match
-        next unless route[:target] =~ /^([^#]+)#([^#]+)$/
+        placeholders = retrieve_placeholders(route, match)
+        target = route[:target]
+        target = retrieve_target(placeholders) if target.nil?
 
-        controller_name = $1.to_camel_case
+        return convert_target(target)
+      end
+    end
+
+    def retrieve_placeholders(route, match)
+      placeholders = {}
+      route[:placeholders].each_with_index do |placeholder, index|
+        placeholders[placeholder] = match.captures[index]
+      end
+
+      placeholders
+    end
+
+    def retrieve_target(placeholders)
+      controller = placeholders["controller"]
+      action = placeholders["action"]
+
+      "#{controller}##{action}"
+    end
+
+    def convert_target(target)
+      target_match = /^(?<controller_name>[^#]+)#(?<action_name>[^#]+)$/.
+                     match(target)
+
+      if target_match
+        controller_name = target_match["controller_name"].to_camel_case
         controller = Object.const_get("#{controller_name}Controller")
 
-        return controller.action($2)
+        return controller.action(target_match["action_name"])
       end
     end
   end
