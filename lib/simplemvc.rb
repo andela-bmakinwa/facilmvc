@@ -16,9 +16,8 @@ module Simplemvc
 
       # env["PATH_INFO"] = "pages/about" => PagesController.send(:about)
       controller_class, action = get_controller_and_action(env)
-      response = controller_class.new.send(action)
-
-      [200, { "Content-type" => "text/html" }, [response]]
+      controller = controller_class.new(env)
+      controller.send(action)
     end
 
     def get_controller_and_action(env_var)
