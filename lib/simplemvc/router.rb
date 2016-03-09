@@ -5,33 +5,9 @@ module Simplemvc
     end
 
     def match(url, *args)
-      default = false
-
-      if args.empty?
-        target = nil
-      else
-        target = args.shift
-        if target.is_a? Hash
-          url += "/:action"
-          default = "/#{target[:default][:action]}"
-          target = nil
-        end
-      end
-
-      url_parts = url.split("/")
-      url_parts.select! { |part| !part.empty? }
-
-      placeholders = []
-      regexp = url_parts.map do |part|
-        if part[0] == ":"
-          placeholders << part[1..-1]
-          "([A-Za-z0-9_]+)"
-        else
-          part
-        end
-      end
-
-      regexp = regexp.join("/")
+      target, default, url = determine_target_and_default(args, url)
+      url_parts = get_url_parts(url)
+      placeholders, regexp = get_regexp(url_parts)
 
       @routes << {
         regexp: Regexp.new("^/#{regexp}$"),
@@ -60,6 +36,46 @@ module Simplemvc
 
         return convert_target(target)
       end
+    end
+
+    private
+
+    def determine_target_and_default(args, url)
+      target = nil
+      default = false
+
+      unless args.empty?
+        target = args.shift
+
+        if target.is_a? Hash
+          url += "/:action"
+          default = "/#{target[:default][:action]}"
+          target = nil
+        end
+      end
+
+      [target, default, url]
+    end
+
+    def get_url_parts(url)
+      url_parts = url.split("/")
+      url_parts.select! { |part| !part.empty? }
+
+      url_parts
+    end
+
+    def get_regexp(url_parts)
+      placeholders = []
+      regexp = url_parts.map do |part|
+        if part[0] == ":"
+          placeholders << part[1..-1]
+          "([A-Za-z0-9_]+)"
+        else
+          part
+        end
+      end
+
+      [placeholders, regexp.join("/")]
     end
 
     def retrieve_placeholders(route, match)
