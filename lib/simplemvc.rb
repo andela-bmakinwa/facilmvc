@@ -11,7 +11,7 @@ module Simplemvc
         return [500, {}, []]
       end
 
-      p get_rack_app(env).call(env)
+      get_rack_app(env).call(env)
     end
 
     def route(&block)
