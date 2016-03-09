@@ -5,7 +5,18 @@ module Simplemvc
     end
 
     def match(url, *args)
-      target = args.empty? ? nil : args.shift
+      default = false
+
+      if args.empty?
+        target = nil
+      else
+        target = args.shift
+        if target.is_a? Hash
+          url += "/:action"
+          default = "/#{target[:default][:action]}"
+          target = nil
+        end
+      end
 
       url_parts = url.split("/")
       url_parts.select! { |part| !part.empty? }
@@ -25,12 +36,22 @@ module Simplemvc
       @routes << {
         regexp: Regexp.new("^/#{regexp}$"),
         target: target,
-        placeholders: placeholders
+        placeholders: placeholders,
+        default: default
       }
+    end
+
+    def draw(&block)
+      instance_eval(&block)
     end
 
     def check_url(url)
       @routes.each do |route|
+        if route[:default]
+          url = url.chomp("/")
+          url += route[:default]
+        end
+
         match = route[:regexp].match(url)
         next unless match
         placeholders = retrieve_placeholders(route, match)

@@ -14,9 +14,8 @@ module Simplemvc
       get_rack_app(env).call(env)
     end
 
-    def route(&block)
+    def routes
       @router ||= Simplemvc::Router.new
-      @router.instance_eval(&block)
     end
 
     def get_rack_app(env)
