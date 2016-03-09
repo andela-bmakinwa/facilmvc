@@ -3,6 +3,7 @@ require "simplemvc/controller.rb"
 require "simplemvc/utils.rb"
 require "simplemvc/dependencies.rb"
 require "simplemvc/router.rb"
+require "simplemvc/mapper.rb"
 
 module Simplemvc
   class Application

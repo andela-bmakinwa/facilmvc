@@ -4,6 +4,10 @@ module Simplemvc
       @routes = []
     end
 
+    def draw(&block)
+      instance_eval(&block)
+    end
+
     def match(url, *args)
       target, default, url = determine_target_and_default(args, url)
       url_parts = get_url_parts(url)
@@ -15,10 +19,6 @@ module Simplemvc
         placeholders: placeholders,
         default: default
       }
-    end
-
-    def draw(&block)
-      instance_eval(&block)
     end
 
     def check_url(url)
